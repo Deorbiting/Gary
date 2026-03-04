@@ -245,7 +245,7 @@ bun test             # Run tests
 
 ## License
 
-MIT
+[PolyForm Noncommercial 1.0.0](LICENSE) — free to use, modify, and share for any noncommercial purpose. Commercial use requires permission from the author.
 
 ## Credits
 
