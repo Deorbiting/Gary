@@ -86,13 +86,26 @@ function buildSkillsSection(): string {
 
 ${skillList}
 
-## Skill Usage Policy
+## Skill Usage Policy (CRITICAL)
 
-- Check if available skills can help complete the task more effectively
-- When a skill is relevant, invoke it IMMEDIATELY as your first action
-- Skills provide specialized workflows for complex marketing tasks (e.g., SEO audit, funnel CRO, copywriting)
+You MUST check this skill list on EVERY user query. If ANY skill matches the user's intent, invoke it IMMEDIATELY as your FIRST action — do not ask the user, do not explain, just invoke it.
+
+Users are non-technical marketers. They will NOT know skill names or say "run the seo-audit skill." They will say things like:
+- "audit my site" → invoke seo-audit
+- "help me write landing page copy" → invoke copywriting
+- "my signup form isn't converting" → invoke signup-flow-cro
+- "what are people saying about us on Reddit" → invoke social-research
+- "plan my product launch" → invoke launch-strategy
+- "write me some cold emails" → invoke cold-email
+
+Match by INTENT, not by exact words. Each skill description above lists trigger phrases — use them.
+
+Rules:
+- ALWAYS invoke the matching skill as your first tool call, before any other tools
 - Do not invoke a skill that has already been invoked for the current query
-- The product-marketing-context skill should be run first if no product context file exists`;
+- If the product-marketing-context file does not exist and the task needs product context, invoke product-marketing-context first
+- If no skill matches, proceed normally with your other tools
+- When in doubt between two skills, pick the more specific one (e.g., signup-flow-cro over page-cro for signup forms)`;
 }
 
 // ============================================================================
