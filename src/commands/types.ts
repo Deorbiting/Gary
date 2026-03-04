@@ -9,11 +9,13 @@
  * - 'silent': Command executed but no visible output
  */
 export interface CommandResult {
-  type: 'output' | 'ui-flow' | 'silent';
+  type: 'output' | 'ui-flow' | 'agent-query' | 'silent';
   /** Text lines to display (for 'output' type) */
   lines?: string[];
   /** Name of the UI flow to trigger (for 'ui-flow' type) */
   flow?: string;
+  /** Query to pass directly to the agent (for 'agent-query' type) */
+  query?: string;
 }
 
 /**

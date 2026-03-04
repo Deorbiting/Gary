@@ -174,6 +174,38 @@ const commandHelp = new Map<string, string[]>([
       '  /export my-audit.md   Save to my-audit.md',
     ],
   ],
+  [
+    'skill',
+    [
+      '/skill - Run a specific marketing skill',
+      '',
+      'Directly invoke a marketing skill by name with optional arguments.',
+      'Without arguments, lists all available skills.',
+      '',
+      'Examples:',
+      '  /skill                          List all skills',
+      '  /skill seo-audit example.com    Audit SEO on example.com',
+      '  /skill copywriting              Run the copywriting skill',
+      '  /skill cold-email B2B CFOs      Write cold emails for B2B CFOs',
+      '  /skill launch-strategy          Plan a product launch',
+    ],
+  ],
+  [
+    'tool',
+    [
+      '/tool - Run a specific tool directly',
+      '',
+      'Directly invoke a tool by name with optional arguments.',
+      'Without arguments, lists all available tools.',
+      '',
+      'Examples:',
+      '  /tool                                    List all tools',
+      '  /tool web_search competitor analysis      Search the web',
+      '  /tool web_fetch https://example.com       Fetch a web page',
+      '  /tool browser https://example.com         Screenshot a site',
+      '  /tool marketing_search GA4 traffic        Query analytics',
+    ],
+  ],
 ]);
 
 const initCommand: SlashCommand = {
@@ -517,6 +549,97 @@ const exportCommand: SlashCommand = {
   },
 };
 
+const skillCommand: SlashCommand = {
+  name: 'skill',
+  description: 'Run a specific marketing skill',
+  hasArgs: true,
+  execute: (args) => {
+    const trimmed = args.trim();
+
+    // No args: list available skills
+    if (!trimmed) {
+      return skillsCommand.execute('');
+    }
+
+    // Parse skill name and optional arguments
+    const spaceIdx = trimmed.indexOf(' ');
+    const skillName = spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx);
+    const skillArgs = spaceIdx === -1 ? '' : trimmed.slice(spaceIdx + 1).trim();
+
+    // Verify the skill exists
+    const skills = discoverSkills();
+    const match = skills.find(
+      (s) => s.name === skillName || s.name === skillName.toLowerCase()
+    );
+
+    if (!match) {
+      return {
+        type: 'output',
+        lines: [
+          `Unknown skill: ${skillName}`,
+          '',
+          'Available skills:',
+          ...skills.map((s) => `  ${s.name.padEnd(28)} ${s.description.slice(0, 50)}`),
+          '',
+          'Usage: /skill <name> [args]',
+        ],
+      };
+    }
+
+    // Build a targeted agent query
+    const query = skillArgs
+      ? `Run the ${match.name} skill on: ${skillArgs}`
+      : `Run the ${match.name} skill`;
+
+    return { type: 'agent-query', query };
+  },
+};
+
+const toolCommand: SlashCommand = {
+  name: 'tool',
+  description: 'Run a specific tool directly',
+  hasArgs: true,
+  execute: (args) => {
+    const trimmed = args.trim();
+
+    // No args: list available tools
+    if (!trimmed) {
+      return toolsCommand.execute('');
+    }
+
+    // Parse tool name and arguments
+    const spaceIdx = trimmed.indexOf(' ');
+    const toolName = spaceIdx === -1 ? trimmed : trimmed.slice(0, spaceIdx);
+    const toolArgs = spaceIdx === -1 ? '' : trimmed.slice(spaceIdx + 1).trim();
+
+    // Verify the tool exists
+    const model = getSetting('modelId', DEFAULT_MODEL);
+    const registry = getToolRegistry(model);
+    const match = registry.find((t) => t.name === toolName);
+
+    if (!match) {
+      return {
+        type: 'output',
+        lines: [
+          `Unknown tool: ${toolName}`,
+          '',
+          'Available tools:',
+          ...registry.map((t) => `  ${t.name.padEnd(20)} ${t.tool.description?.slice(0, 60) ?? ''}`),
+          '',
+          'Usage: /tool <name> [args]',
+        ],
+      };
+    }
+
+    // Build a targeted agent query
+    const query = toolArgs
+      ? `Use the ${match.name} tool to: ${toolArgs}`
+      : `Use the ${match.name} tool`;
+
+    return { type: 'agent-query', query };
+  },
+};
+
 const mcpCommand: SlashCommand = {
   name: 'mcp',
   description: 'Manage MCP servers',
@@ -542,6 +665,8 @@ const commands: SlashCommand[] = [
   helpCommand,
   clearCommand,
   modelCommand,
+  skillCommand,
+  toolCommand,
   toolsCommand,
   skillsCommand,
   configCommand,

@@ -293,6 +293,20 @@ export async function runCli() {
           return;
         }
 
+        if (cmdResult.type === 'agent-query' && cmdResult.query) {
+          // Route directly to the agent with the generated query
+          intro.showStarters(false);
+          await inputHistory.saveMessage(query);
+          inputHistory.resetNavigation();
+          const result = await agentRunner.runQuery(cmdResult.query);
+          if (result?.answer) {
+            await inputHistory.updateAgentResponse(result.answer);
+          }
+          refreshError();
+          tui.requestRender();
+          return;
+        }
+
         if (cmdResult.type === 'output' && cmdResult.lines) {
           chatLog.addQuery(query);
           for (const line of cmdResult.lines) {

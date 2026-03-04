@@ -24,6 +24,8 @@ export class ShortcutsOverlayComponent extends Container {
       ['/init', 'Set up Gary (first-time setup)'],
       ['/help', 'Show commands (/help <cmd> for details)'],
       ['/model', 'Switch LLM provider'],
+      ['/skill <name>', 'Run a skill (e.g. /skill seo-audit)'],
+      ['/tool <name>', 'Run a tool (e.g. /tool web_search)'],
       ['/skills', 'List marketing skills'],
       ['/tools', 'List available tools'],
       ['/mcp', 'Manage MCP servers'],
