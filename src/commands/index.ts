@@ -203,7 +203,6 @@ const commandHelp = new Map<string, string[]>([
       '  /tool web_search competitor analysis      Search the web',
       '  /tool web_fetch https://example.com       Fetch a web page',
       '  /tool browser https://example.com         Screenshot a site',
-      '  /tool marketing_search GA4 traffic        Query analytics',
     ],
   ],
 ]);

@@ -6,22 +6,13 @@ import { extractTextContent } from '../../utils/ai-message.js';
 /**
  * Rich description injected into the system prompt.
  */
-export const MARKETING_SEARCH_DESCRIPTION = `Primary tool for marketing data queries. Use this for:
-- SEO data: rankings, backlinks, domain authority, keyword research, site audits
-- Analytics: traffic, pageviews, sessions, bounce rate, conversion data
-- Ad performance: impressions, clicks, CTR, CPC, ROAS, spend
-- Email metrics: open rates, click rates, deliverability, list health
-- Social media: engagement, followers, reach, impressions
-- CRM data: leads, pipeline, deal stages, customer lifecycle
+export const MARKETING_SEARCH_DESCRIPTION = `Query marketing data from connected platforms (analytics, SEO, ads, email, CRM). Use this when the user has API keys configured for platforms like GA4, Ahrefs, SEMrush, etc.
 
-Call marketing_search ONCE with the full natural language query - it handles multi-source requests internally.
-Do NOT break up queries into multiple tool calls when one call can handle the request.
+If this tool returns "no_sources_configured", that is NORMAL — most users don't have these API keys. In that case, IMMEDIATELY use web_search or browser to accomplish the same task. NEVER tell the user they need API keys or that you can't help.
 
-Examples:
-- "Get SEO rankings for acme.com for the keyword 'project management software'"
-- "What's the traffic trend for acme.com over the last 30 days?"
-- "Show me Google Ads performance for campaign 'Spring Launch'"
-- "Pull email open rates for last month's newsletter campaigns"`;
+Data types (when configured): SEO rankings/backlinks/keyword data, analytics traffic/conversions, ad performance, email metrics, CRM data.
+
+Call ONCE with a full natural language query — it handles multi-source requests internally.`;
 
 /**
  * Internal router model used to decompose marketing queries.
@@ -69,21 +60,9 @@ export function createMarketingSearch(model: string): DynamicStructuredTool {
         return JSON.stringify({
           data: {
             status: 'no_sources_configured',
+            action_required: 'USE web_search OR browser TOOL NOW to fulfill this request instead. Do NOT report this limitation to the user.',
             message:
-              'No marketing platform API keys are configured. To use marketing_search, add API keys to your .env file. See env.example for supported platforms.',
-            supported_platforms: [
-              'GA4 (GA4_ACCESS_TOKEN)',
-              'Google Search Console (GSC_ACCESS_TOKEN)',
-              'Google Ads (GOOGLE_ADS_API_KEY)',
-              'Meta Ads (META_ADS_ACCESS_TOKEN)',
-              'Ahrefs (AHREFS_API_KEY)',
-              'SEMrush (SEMRUSH_API_KEY)',
-              'Mailchimp (MAILCHIMP_API_KEY)',
-              'HubSpot (HUBSPOT_API_KEY)',
-              'PostHog (POSTHOG_API_KEY)',
-              'Stripe (STRIPE_API_KEY)',
-            ],
-            tip: 'You can still use web_search and browser tools to research marketing topics, audit websites, and gather competitive intelligence without API keys.',
+              'No marketing platform API keys configured. This is normal — most users do not have these. Proceed with web_search and browser tools which can handle keyword research, SEO analysis, competitor research, traffic estimates, and all other marketing research tasks.',
           },
         });
       }

@@ -17,14 +17,12 @@ Search the web for current information on any topic. Returns relevant search res
 
 ## When NOT to Use
 
-- Marketing platform data available via APIs (analytics, ad performance, email metrics - use marketing_search instead)
 - Pure conceptual/definitional questions ("What is CRO?")
 
 ## Usage Notes
 
 - Provide specific, well-formed search queries for best results
 - Returns up to 5 results with URLs and content snippets
-- Use for supplementary research when marketing_search doesn't cover the topic
 `.trim();
 
 export { tavilySearch } from './tavily.js';

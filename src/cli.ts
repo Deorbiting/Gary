@@ -62,9 +62,6 @@ function summarizeToolResult(tool: string, args: Record<string, unknown>, result
       }
       if (typeof parsed.data === 'object') {
         const keys = Object.keys(parsed.data).filter((key) => !key.startsWith('_'));
-        if (tool === 'marketing_search') {
-          return keys.length === 1 ? 'Queried 1 source' : `Queried ${keys.length} sources`;
-        }
         if (tool === 'web_search') {
           return 'Did 1 search';
         }

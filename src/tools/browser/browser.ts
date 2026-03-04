@@ -40,7 +40,6 @@ Control a web browser to navigate websites and extract information.
 
 - Reading static web pages or articles (use **web_fetch** instead - it is faster and returns content in a single call)
 - Simple queries that web_search can already answer
-- Structured marketing data available via APIs (use marketing_search instead)
 - General knowledge questions
 
 ## CRITICAL: Navigate Returns NO Content

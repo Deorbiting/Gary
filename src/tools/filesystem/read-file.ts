@@ -19,7 +19,6 @@ Read file contents from the local workspace.
 ## When NOT to Use
 
 - Fetching web URLs (use \`web_fetch\`)
-- Looking up marketing platform data (use \`marketing_search\`)
 - Writing or changing files (use \`write_file\` / \`edit_file\`)
 
 ## Usage Notes

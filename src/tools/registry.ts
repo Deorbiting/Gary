@@ -1,5 +1,4 @@
 import { StructuredToolInterface } from '@langchain/core/tools';
-import { createMarketingSearch, MARKETING_SEARCH_DESCRIPTION } from './marketing/index.js';
 import { exaSearch, perplexitySearch, tavilySearch, WEB_SEARCH_DESCRIPTION } from './search/index.js';
 import { skillTool, SKILL_TOOL_DESCRIPTION } from './skill.js';
 import { webFetchTool, WEB_FETCH_DESCRIPTION } from './fetch/web-fetch.js';
@@ -68,11 +67,6 @@ export async function shutdownMcp(): Promise<void> {
  */
 export function getToolRegistry(model: string): RegisteredTool[] {
   const tools: RegisteredTool[] = [
-    {
-      name: 'marketing_search',
-      tool: createMarketingSearch(model),
-      description: MARKETING_SEARCH_DESCRIPTION,
-    },
     {
       name: 'web_fetch',
       tool: webFetchTool,

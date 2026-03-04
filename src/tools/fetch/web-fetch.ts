@@ -56,7 +56,6 @@ Use web_fetch as your FIRST choice whenever you need to read the content of a we
 ## When NOT to Use
 
 - Interactive pages that require JavaScript rendering, clicking, or form filling (use browser instead)
-- Structured marketing data available via APIs (use marketing_search instead)
 - When you need to navigate through multiple pages by clicking links (use browser instead)
 
 ## Schema
