@@ -149,9 +149,9 @@ Gary supports 8 LLM providers. Switch anytime with `/model`:
 | OpenRouter | Any model on openrouter.ai | `OPENROUTER_API_KEY` |
 | Ollama | Any local model | `OLLAMA_BASE_URL` |
 
-## Marketing Skills (32 built-in)
+## Marketing Skills (33 built-in)
 
-Gary ships with 32 marketing skills that provide specialized workflows and best practices:
+Gary ships with 33 marketing skills that provide specialized workflows and best practices:
 
 | Category | Skills |
 |----------|--------|
@@ -161,6 +161,7 @@ Gary ships with 32 marketing skills that provide specialized workflows and best 
 | **Ads** | paid-ads, ad-creative |
 | **Analytics** | analytics-tracking, ab-test-setup |
 | **Strategy** | marketing-ideas, marketing-psychology, launch-strategy, pricing-strategy, competitor-alternatives, product-marketing-context |
+| **Research** | social-research |
 | **Growth** | free-tool-strategy, referral-program, churn-prevention |
 | **Sales** | revops, sales-enablement |
 
