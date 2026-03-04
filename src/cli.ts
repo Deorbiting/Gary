@@ -24,11 +24,14 @@ import {
   DebugPanelComponent,
   IntroComponent,
   McpScreenComponent,
+  StatusBarComponent,
+  ShortcutsOverlayComponent,
   WorkingIndicatorComponent,
   createApiKeyConfirmSelector,
   createModelSelector,
   createProviderSelector,
   createMcpScreen,
+  createInitScreen,
 } from './components/index.js';
 import { editorTheme, theme } from './theme.js';
 import { shutdownMcp } from './tools/index.js';
@@ -182,6 +185,7 @@ export async function runCli() {
 
   const modelSelection = new ModelSelectionController(onError, () => {
     intro.setModel(modelSelection.model);
+    statusBar.setModel(modelSelection.model);
     renderSelectionOverlay();
     tui.requestRender();
   });
@@ -201,9 +205,12 @@ export async function runCli() {
   const errorText = new Text('', 0, 0);
   const workingIndicator = new WorkingIndicatorComponent(tui);
 
-  // MCP screen state
+  // Overlay screen state
   let mcpScreenActive = false;
   let mcpAddMode = false; // sub-state: adding a server
+  let initScreenActive = false;
+  let shortcutsOverlayActive = false;
+  let initScreen: ReturnType<typeof createInitScreen> | null = null;
   const editor = new CustomEditor(tui, editorTheme);
 
   // Set up slash command autocomplete
@@ -213,6 +220,7 @@ export async function runCli() {
   }));
   editor.setAutocompleteProvider(new CombinedAutocompleteProvider(slashCommands));
 
+  const statusBar = new StatusBarComponent(modelSelection.model);
   const debugPanel = new DebugPanelComponent(8, true);
 
   tui.addChild(root);
@@ -233,6 +241,14 @@ export async function runCli() {
       return;
     }
 
+    // Show keyboard shortcuts overlay on lone '?'
+    if (query === '?') {
+      shortcutsOverlayActive = true;
+      renderSelectionOverlay();
+      tui.requestRender();
+      return;
+    }
+
     // Route slash commands through the command system
     if (isSlashCommand(query)) {
       const cmdResult = await executeCommand(query);
@@ -247,6 +263,30 @@ export async function runCli() {
             tui.requestRender();
           } else if (cmdResult.flow === 'mcp') {
             mcpScreenActive = true;
+            renderSelectionOverlay();
+            tui.requestRender();
+          } else if (cmdResult.flow === 'init') {
+            initScreenActive = true;
+            initScreen = createInitScreen({
+              onComplete: () => {
+                initScreenActive = false;
+                initScreen = null;
+                renderSelectionOverlay();
+                tui.requestRender();
+              },
+              onApiKeySave: (_provider, _key) => {
+                // TODO: persist API key to .env
+              },
+              onFlowRequest: (flow) => {
+                if (flow === 'init-context') {
+                  // Close init, let user run the skill manually
+                  initScreenActive = false;
+                  initScreen = null;
+                  renderSelectionOverlay();
+                  tui.requestRender();
+                }
+              },
+            });
             renderSelectionOverlay();
             tui.requestRender();
           }
@@ -269,6 +309,7 @@ export async function runCli() {
       // Command not recognized — fall through to agent
     }
 
+    intro.showStarters(false);
     await inputHistory.saveMessage(query);
     inputHistory.resetNavigation();
     const result = await agentRunner.runQuery(query);
@@ -288,6 +329,19 @@ export async function runCli() {
   };
 
   editor.onEscape = () => {
+    if (shortcutsOverlayActive) {
+      shortcutsOverlayActive = false;
+      renderSelectionOverlay();
+      tui.requestRender();
+      return;
+    }
+    if (initScreenActive) {
+      initScreenActive = false;
+      initScreen = null;
+      renderSelectionOverlay();
+      tui.requestRender();
+      return;
+    }
     if (mcpScreenActive) {
       mcpScreenActive = false;
       mcpAddMode = false;
@@ -330,6 +384,7 @@ export async function runCli() {
     }
     root.addChild(new Spacer(1));
     root.addChild(editor);
+    root.addChild(statusBar);
     root.addChild(debugPanel);
     tui.setFocus(editor);
   };
@@ -411,6 +466,24 @@ export async function runCli() {
 
   const renderSelectionOverlay = () => {
     const state = modelSelection.state;
+
+    // Keyboard shortcuts overlay
+    if (shortcutsOverlayActive) {
+      const overlay = new ShortcutsOverlayComponent();
+      overlay.onDismiss = () => {
+        shortcutsOverlayActive = false;
+        renderSelectionOverlay();
+        tui.requestRender();
+      };
+      renderScreenView('', '', overlay, undefined, overlay);
+      return;
+    }
+
+    // Init screen
+    if (initScreenActive && initScreen) {
+      renderScreenView('', '', initScreen, undefined, initScreen);
+      return;
+    }
 
     // MCP screens take priority when active
     if (mcpScreenActive) {
@@ -515,8 +588,12 @@ export async function runCli() {
   };
 
   await inputHistory.init();
-  for (const msg of inputHistory.getMessages().reverse()) {
+  const savedMessages = inputHistory.getMessages();
+  for (const msg of savedMessages.reverse()) {
     editor.addToHistory(msg);
+  }
+  if (savedMessages.length > 0) {
+    intro.showStarters(false);
   }
   renderSelectionOverlay();
   refreshError();

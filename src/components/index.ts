@@ -4,6 +4,7 @@ export { ChatLogComponent } from './chat-log.js';
 export { DebugPanelComponent } from './debug-panel.js';
 export { CustomEditor } from './custom-editor.js';
 export { IntroComponent } from './intro.js';
+export { StatusBarComponent } from './status-bar.js';
 export {
   ApiKeyInputComponent,
   createApiKeyConfirmSelector,
@@ -15,3 +16,6 @@ export { ToolEventComponent } from './tool-event.js';
 export { UserQueryComponent } from './user-query.js';
 export { WorkingIndicatorComponent } from './working-indicator.js';
 export { McpScreenComponent, McpServerList, createMcpScreen } from './mcp-screen.js';
+export { InitScreenComponent, createInitScreen } from './init-screen.js';
+export type { InitScreenCallbacks } from './init-screen.js';
+export { ShortcutsOverlayComponent } from './shortcuts-overlay.js';

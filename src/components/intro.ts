@@ -7,6 +7,8 @@ const INTRO_WIDTH = 50;
 
 export class IntroComponent extends Container {
   private readonly modelText: Text;
+  private starterHeader: Text | null = null;
+  private starterTexts: Text[] = [];
 
   constructor(model: string) {
     super();
@@ -56,6 +58,8 @@ export class IntroComponent extends Container {
     this.modelText = new Text('', 0, 0);
     this.addChild(this.modelText);
     this.setModel(model);
+
+    this.addStarterPrompts();
   }
 
   setModel(model: string) {
@@ -64,5 +68,44 @@ export class IntroComponent extends Container {
         '. Type /model to change.',
       )}`,
     );
+  }
+
+  showStarters(visible: boolean) {
+    if (visible) {
+      this.addStarterPrompts();
+    } else {
+      this.removeStarterPrompts();
+    }
+  }
+
+  private addStarterPrompts() {
+    if (this.starterHeader) return;
+
+    this.starterHeader = new Text(theme.muted('Try asking:'), 0, 0);
+    this.addChild(this.starterHeader);
+
+    const prompts = [
+      'Audit my landing page at [url]',
+      'Write a cold email sequence for [audience]',
+      'What SEO keywords should I target?',
+      'Create a launch plan for my new feature',
+    ];
+
+    for (const prompt of prompts) {
+      const text = new Text(`  ${theme.primary('→')} ${prompt}`, 0, 0);
+      this.starterTexts.push(text);
+      this.addChild(text);
+    }
+  }
+
+  private removeStarterPrompts() {
+    if (this.starterHeader) {
+      this.removeChild(this.starterHeader);
+      this.starterHeader = null;
+    }
+    for (const text of this.starterTexts) {
+      this.removeChild(text);
+    }
+    this.starterTexts = [];
   }
 }
