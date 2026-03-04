@@ -56,6 +56,8 @@ GOOGLE_API_KEY=AI...
 
 Optionally add keys for your marketing platforms (analytics, SEO, ads, email, CRM, payments). See `env.example` for the full list.
 
+Or run `/init` after starting Gary for a guided setup wizard.
+
 ### Run
 
 ```bash
@@ -82,19 +84,42 @@ Create a launch strategy for a new feature targeting enterprise users
 Analyze my signup funnel and find the biggest drop-off points
 ```
 
+### Direct Skill & Tool Invocation
+
+Run any skill or tool directly from the command line:
+
+```
+/skill seo-audit https://example.com       # Run SEO audit on a site
+/skill copywriting                          # Run the copywriting skill
+/skill cold-email B2B SaaS targeting CFOs   # Write cold emails for an audience
+/skill launch-strategy                      # Plan a product launch
+
+/tool web_search competitor analysis        # Search the web
+/tool web_fetch https://example.com         # Fetch and read a page
+/tool browser https://example.com           # Screenshot a live site
+/tool marketing_search GA4 traffic          # Query your analytics
+```
+
+Without arguments, `/skill` and `/tool` list all available options.
+
 ### Slash Commands
 
 Type `/` to see autocomplete suggestions. Available commands:
 
 | Command | Description |
 |---------|-------------|
-| `/help` | Show available commands |
+| `/init` | Set up Gary (API keys, platforms, context) |
+| `/help [command]` | Show commands, or detailed help for a specific command |
 | `/model` | Switch LLM provider and model |
-| `/tools` | List all available tools |
+| `/skill <name> [args]` | Run a specific marketing skill |
+| `/tool <name> [args]` | Run a specific tool directly |
 | `/skills` | List all loaded marketing skills |
-| `/config` | Show current configuration |
-| `/context` | Show conversation context stats |
+| `/tools` | List all available tools |
 | `/mcp` | Manage MCP (Model Context Protocol) servers |
+| `/config` | Show current configuration |
+| `/context` | Show product marketing context status |
+| `/history` | Browse past conversations |
+| `/export [filename]` | Save last response to a markdown file |
 | `/clear` | Clear conversation history |
 | `/exit` | Exit Gary |
 
@@ -107,6 +132,7 @@ Type `/` to see autocomplete suggestions. Available commands:
 | `Ctrl+C` | Cancel or exit |
 | `Up/Down` | Navigate input history |
 | `Tab` | Accept autocomplete suggestion |
+| `?` | Show keyboard shortcuts & commands overlay |
 
 ## Multi-Provider LLM Support
 
@@ -138,7 +164,7 @@ Gary ships with 32 marketing skills that provide specialized workflows and best 
 | **Growth** | free-tool-strategy, referral-program, churn-prevention |
 | **Sales** | revops, sales-enablement |
 
-Skills are loaded automatically. Use `/skills` to see all available skills.
+Skills are loaded automatically. Use `/skills` to list them, or `/skill <name>` to run one directly.
 
 ### Adding Custom Skills
 
@@ -188,7 +214,7 @@ Config locations (project-level overrides user-level):
 
 ## Product Context
 
-Gary reads your product marketing context from `.agents/product-marketing-context.md` to personalize all advice. Run the `product-marketing-context` skill to set this up -- it will interview you about your product, audience, positioning, and competitors, then generate the context file.
+Gary reads your product marketing context from `.agents/product-marketing-context.md` to personalize all advice. Run `/init` for guided setup, or use `/skill product-marketing-context` to set this up -- it will interview you about your product, audience, positioning, and competitors, then generate the context file.
 
 ## Built-in Tools
 
