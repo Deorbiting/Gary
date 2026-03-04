@@ -7,6 +7,7 @@ export {
   getSkill,
   buildSkillMetadataSection,
   clearSkillCache,
+  registerEmbeddedSkills,
 } from './registry.js';
 
 // Skill loader functions

@@ -25,6 +25,22 @@ const SKILL_DIRECTORIES: { path: string; source: SkillSource }[] = [
 // Cache for discovered skills (metadata only)
 let skillMetadataCache: Map<string, SkillMetadata> | null = null;
 
+// Cache for pre-loaded full skills (embedded at build time for desktop apps)
+const embeddedSkillCache = new Map<string, Skill>();
+
+/**
+ * Register pre-loaded skills (e.g. embedded at build time in Electron).
+ * These are used when filesystem-based discovery isn't possible.
+ * Must be called before Agent.create() / discoverSkills().
+ */
+export function registerEmbeddedSkills(skills: Skill[]): void {
+  for (const skill of skills) {
+    embeddedSkillCache.set(skill.name, skill);
+  }
+  // Clear metadata cache so discoverSkills() picks up embedded skills
+  skillMetadataCache = null;
+}
+
 /**
  * Scan a directory for SKILL.md files and return their metadata.
  * Looks for directories containing SKILL.md files.
@@ -71,6 +87,11 @@ export function discoverSkills(): SkillMetadata[] {
 
   skillMetadataCache = new Map();
 
+  // Start with embedded skills (lowest precedence)
+  for (const [name, skill] of embeddedSkillCache) {
+    skillMetadataCache.set(name, { name: skill.name, description: skill.description, path: skill.path, source: skill.source });
+  }
+
   for (const { path, source } of SKILL_DIRECTORIES) {
     const skills = scanSkillDirectory(path, source);
     for (const skill of skills) {
@@ -94,13 +115,21 @@ export function getSkill(name: string): Skill | undefined {
     discoverSkills();
   }
 
+  // Check embedded skills first (they have full instructions already)
+  const embedded = embeddedSkillCache.get(name);
+  if (embedded) return embedded;
+
   const metadata = skillMetadataCache?.get(name);
   if (!metadata) {
     return undefined;
   }
 
-  // Load full skill with instructions
-  return loadSkillFromPath(metadata.path, metadata.source);
+  // Load full skill with instructions from disk
+  try {
+    return loadSkillFromPath(metadata.path, metadata.source);
+  } catch {
+    return undefined;
+  }
 }
 
 /**
