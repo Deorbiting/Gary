@@ -6,6 +6,7 @@ import { browserTool, BROWSER_DESCRIPTION } from './browser/browser.js';
 import { readFileTool, READ_FILE_DESCRIPTION } from './filesystem/read-file.js';
 import { writeFileTool, WRITE_FILE_DESCRIPTION } from './filesystem/write-file.js';
 import { editFileTool, EDIT_FILE_DESCRIPTION } from './filesystem/edit-file.js';
+import { companyProfileTool, COMPANY_PROFILE_DESCRIPTION } from './company-profile.js';
 import { discoverSkills } from '../skills/index.js';
 import { McpClientManager, loadMcpConfig, getEnabledServers } from '../mcp/index.js';
 import { logger } from '../utils/logger.js';
@@ -91,6 +92,11 @@ export function getToolRegistry(model: string): RegisteredTool[] {
       name: 'edit_file',
       tool: editFileTool,
       description: EDIT_FILE_DESCRIPTION,
+    },
+    {
+      name: 'get_company_profile',
+      tool: companyProfileTool,
+      description: COMPANY_PROFILE_DESCRIPTION,
     },
   ];
 

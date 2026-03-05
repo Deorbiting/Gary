@@ -1,5 +1,7 @@
 import { buildToolDescriptions } from '../tools/registry.js';
 import { buildSkillMetadataSection, discoverSkills } from '../skills/index.js';
+import { getSetting } from '../utils/config.js';
+import type { CompanyProfile } from '../tools/company-profile.js';
 import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -67,6 +69,27 @@ async function loadProductContext(): Promise<string | null> {
   }
 
   return null;
+}
+
+/**
+ * Build a tiny identity card from the company profile (~50 tokens).
+ * Returns null if no profile is configured.
+ */
+function buildCompanyIdentityCard(): string {
+  const profile = getSetting<CompanyProfile | null>('companyProfile', null);
+  if (!profile || !profile.companyName) return '';
+
+  const parts = [`## Company Context\n\nYou are assisting **${profile.companyName}**`];
+  if (profile.industry) parts[0] += ` (${profile.industry})`;
+  parts[0] += '.';
+  if (profile.oneLiner) parts.push(profile.oneLiner);
+  const meta: string[] = [];
+  if (profile.website) meta.push(`Website: ${profile.website}`);
+  if (profile.stage) meta.push(`Stage: ${profile.stage}`);
+  if (meta.length) parts.push(meta.join(' | '));
+  parts.push('Use the get_company_profile tool for detailed ICP, strategy, brand voice, and product info when needed.');
+
+  return parts.join('\n') + '\n';
 }
 
 /**
@@ -199,7 +222,7 @@ ${soulContent}
 
 Embody the identity and marketing philosophy described above. Let it shape your tone, your values, and how you engage with marketing challenges.
 ` : ''}
-
+${buildCompanyIdentityCard()}
 ## Response Format
 
 - Keep casual responses brief and direct
