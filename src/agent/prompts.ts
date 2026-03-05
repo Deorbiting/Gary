@@ -77,10 +77,14 @@ async function loadProductContext(): Promise<string | null> {
  */
 function buildCompanyIdentityCard(): string {
   const profile = getSetting<CompanyProfile | null>('companyProfile', null);
-  if (!profile || !profile.companyName) return '';
+  if (!profile) return '';
 
-  const parts = [`## Company Context\n\nYou are assisting **${profile.companyName}**`];
-  if (profile.industry) parts[0] += ` (${profile.industry})`;
+  // Find a display name from whatever is available
+  const name = profile.companyName || profile.website || profile.industry;
+  if (!name) return '';
+
+  const parts = [`## Company Context\n\nYou are assisting **${name}**`];
+  if (profile.industry && name !== profile.industry) parts[0] += ` (${profile.industry})`;
   parts[0] += '.';
   if (profile.oneLiner) parts.push(profile.oneLiner);
   const meta: string[] = [];

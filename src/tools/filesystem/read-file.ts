@@ -41,7 +41,7 @@ export const readFileTool = new DynamicStructuredTool({
     'Read text file contents safely from workspace paths. Supports offset/limit pagination for large files.',
   schema: readFileSchema,
   func: async (input) => {
-    const cwd = process.cwd();
+    const cwd = process.env.GARY_WORKSPACE || process.cwd();
     const { resolved: sandboxPath } = await assertSandboxPath({
       filePath: input.path,
       cwd,

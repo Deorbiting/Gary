@@ -48,7 +48,7 @@ export const editFileTool = new DynamicStructuredTool({
     'Make precise text replacements in a file. The target text must be unique in the file to avoid ambiguous edits.',
   schema: editFileSchema,
   func: async (input) => {
-    const cwd = process.cwd();
+    const cwd = process.env.GARY_WORKSPACE || process.cwd();
     const { resolved } = await assertSandboxPath({
       filePath: input.path,
       cwd,

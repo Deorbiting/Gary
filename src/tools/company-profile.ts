@@ -94,7 +94,14 @@ export const companyProfileTool = new DynamicStructuredTool({
   func: async ({ section }) => {
     const profile = getSetting<CompanyProfile | null>('companyProfile', null);
 
-    if (!profile || !profile.companyName) {
+    // Check if profile has any meaningful data (not just empty strings)
+    const hasData = profile && Object.entries(profile).some(([key, val]) => {
+      if (key === 'activeChannels') return Array.isArray(val) && val.length > 0;
+      if (key === 'socialLinks') return val && Object.values(val as Record<string, string>).some(Boolean);
+      return typeof val === 'string' && val.trim().length > 0;
+    });
+
+    if (!hasData) {
       return 'No company profile configured. Ask the user for the details you need, or suggest they fill in their profile under Settings → Company.';
     }
 

@@ -38,7 +38,7 @@ export const writeFileTool = new DynamicStructuredTool({
     'Create or overwrite a file inside the workspace. Automatically creates parent directories when needed.',
   schema: writeFileSchema,
   func: async (input) => {
-    const cwd = process.cwd();
+    const cwd = process.env.GARY_WORKSPACE || process.cwd();
     const { resolved } = await assertSandboxPath({
       filePath: input.path,
       cwd,
